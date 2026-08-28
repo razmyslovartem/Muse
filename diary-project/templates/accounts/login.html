@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход в систему{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-5 col-lg-4">
+        <div class="card entry-card shadow-lg">
+            <div class="card-header bg-gradient text-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem 1.5rem;">
+                <i class="bi bi-box-arrow-in-right text-white" style="font-size: 2.5rem;"></i>
+                <h3 class="mb-0 mt-2 text-black">Добро пожаловать</h3>
+                <p class="mb-0 text-black-50">Войдите в свой дневник</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label fw-bold text-dark">
+                                {{ field.label }}
+                            </label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="text-danger small mt-1">
+                                    {% for error in field.errors %}
+                                        <i class="bi bi-exclamation-circle"></i> {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-gradient w-100 btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> Войти
+                    </button>
+                </form>
+                <hr>
+                <p class="text-center mb-0 text-dark">
+                    Нет аккаунта? <a href="{% url 'accounts:register' %}" class="fw-bold text-primary">Зарегистрироваться</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
