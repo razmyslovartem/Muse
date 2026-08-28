@@ -33,7 +33,7 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 # Application definition
 
 # Encryption
-ENCRYPTION_KEY = os.getenv('ENCRYPTION_KEY')
+ENCRYPTION_KEY = os.environ['ENCRYPTION_KEY']
 if not ENCRYPTION_KEY:
     raise ValueError("ENCRYPTION_KEY must be set in .env file")
 
