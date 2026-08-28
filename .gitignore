@@ -43,3 +43,6 @@ dmypy.json
 
 # Docker
 *.pid
+
+# Poetry
+poetry.toml
