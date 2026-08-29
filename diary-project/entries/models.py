@@ -50,5 +50,5 @@ class Entry(models.Model):
         try:
             cipher = Fernet(settings.ENCRYPTION_KEY.encode())
             return cipher.decrypt(self.content.encode()).decode()
-        except Exception:
-            raise ContentEncryptionError(f"Ошибка расшифровки записи {self.id}")
+        except Exception as e:
+            raise ContentEncryptionError(f"Ошибка расшифровки записи {self.id}") from e
