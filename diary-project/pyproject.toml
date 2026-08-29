@@ -83,6 +83,12 @@ strict_optional = true
 exclude = [".git", ".venv", "venv", "__pycache__"]
 exclude_gitignore = true
 
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "diary.settings"
+python_files = "test_*.py"
+testpaths = ["accounts", "entries", "api"]
+addopts = "-v"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

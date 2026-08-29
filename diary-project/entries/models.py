@@ -7,6 +7,11 @@ from cryptography.fernet import Fernet
 User = get_user_model()
 
 
+class ContentEncryptionError(Exception):
+    """Ошибка при расшифровке контента."""
+    pass
+
+
 class Entry(models.Model):
     user = models.ForeignKey(
         User,
@@ -39,11 +44,11 @@ class Entry(models.Model):
         super().save(*args, **kwargs)
 
     def decrypt_content(self):
-        """Расшифровываем содержимое"""
+        """Расшифровывает содержимое записи"""
         if not self.is_encrypted:
             return self.content
         try:
             cipher = Fernet(settings.ENCRYPTION_KEY.encode())
             return cipher.decrypt(self.content.encode()).decode()
         except Exception as e:
-            return f"[Ошибка расшифровки: {e}]"
+            raise ContentEncryptionError(f"Ошибка расшифровки записи {self.id}") from e

@@ -6,6 +6,33 @@ from .models import Entry
 from .forms import EntryForm
 
 
+def filter_entries_by_phrase(entries, phrase):
+    """Фильтрует записи по фразе (регистронезависимо)"""
+    phrase_lower = phrase.casefold()
+    return [
+        e for e in entries
+        if phrase_lower in e.title.casefold()
+           or phrase_lower in e.decrypt_content().casefold()
+    ]
+
+
+def filter_entries_by_words(entries, *words):
+    """Фильтрует записи по словам"""
+    if not words:
+        return []
+    result = []
+    for entry in entries:
+        content_lower = entry.decrypt_content().casefold()
+        title_lower = entry.title.casefold()
+        for word in words:
+            word_lower = word.casefold()
+            if len(word_lower) > 1:
+                if word_lower in title_lower or word_lower in content_lower:
+                    result.append(entry)
+                    break
+    return result
+
+
 class EntryListView(LoginRequiredMixin, ListView):
     """Список записей с поиском"""
     model = Entry
@@ -15,27 +42,16 @@ class EntryListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         queryset = Entry.objects.filter(user=self.request.user)
-        query = self.request.GET.get('q', '').strip().casefold()
+        query = self.request.GET.get('q', '').strip()
 
         if query:
             entries_list = list(queryset)
 
-            filtered_entries = [
-                e for e in entries_list
-                if query in e.title.casefold() or query in e.decrypt_content().casefold()
-            ]
+            filtered = filter_entries_by_phrase(entries_list, query)
+            if filtered:
+                return filtered
 
-            if not filtered_entries:
-                words = query.split()
-                filtered_entries = [
-                    e for e in entries_list
-                    if any(
-                        word in e.title.casefold() or word in e.decrypt_content().casefold()
-                        for word in words
-                    )
-                ]
-
-            return filtered_entries
+            return filter_entries_by_words(entries_list, *query.split())
 
         return queryset
 
